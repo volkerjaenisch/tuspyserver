@@ -17,13 +17,13 @@ app.add_middleware(
     allow_headers=["*"],
     expose_headers=[
         "Location",
-        "Upload-Offset",
         "Tus-Resumable",
         "Tus-Version",
         "Tus-Extension",
         "Tus-Max-Size",
-        "Upload-Expires",
+        "Upload-Offset",
         "Upload-Length",
+        "Upload-Expires",
     ],
 )
 
