@@ -3,6 +3,7 @@ import inspect
 import json
 import os
 from datetime import datetime, timedelta
+from json import JSONDecodeError
 from typing import Callable, Optional
 from uuid import uuid4
 
@@ -285,11 +286,16 @@ def create_tus_router(
 
     def _read_metadata(uid: str) -> FileMetadata | None:
         fpath = os.path.join(files_dir, f"{uid}.info")
-        if os.path.exists(fpath):
-            with open(fpath, "r") as f:
-                return FileMetadata(**json.load(f))
+        if not os.path.exists(fpath):
+            return None
 
-        return None
+        try:
+            with open(fpath, "r") as f:
+                data = json.load(f)  # if this fails, we’ll catch below
+            return FileMetadata(**data)
+        except (JSONDecodeError, TypeError, OSError):
+            # If the file exists but is empty/invalid, treat it as “no metadata.”
+            return None
 
     def _get_file(uid: str) -> bytes | None:
         fpath = os.path.join(files_dir, uid)
