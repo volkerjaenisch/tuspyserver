@@ -23,6 +23,7 @@ app.add_middleware(
         "Tus-Extension",
         "Tus-Max-Size",
         "Upload-Expires",
+        "Upload-Length",
     ],
 )
 
