@@ -97,6 +97,16 @@ def create_tus_router(
         if meta is None or not _file_exists(uuid):
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
+        if meta.error:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=meta.error,
+            )
+
+        if meta.size == meta.offset:
+            _delete_files(uuid)
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+
         response.headers["Tus-Resumable"] = tus_version
         response.headers["Content-Length"] = str(meta.size)
         response.headers["Upload-Length"] = str(meta.size)
