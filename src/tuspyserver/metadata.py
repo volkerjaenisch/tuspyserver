@@ -13,6 +13,7 @@ class FileMetadata(BaseModel):
     defer_length: bool
     upload_chunk_size: int = 0
     expires: float | str | None
+    error: str | None = None
 
     @classmethod
     def from_request(

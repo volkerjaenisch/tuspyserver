@@ -1,6 +1,6 @@
 [project]
 name = "tuspyserver"
-version = "3.0.6"
+version = "3.0.7"
 description ="A Python tus server implementation as a FastAPI router"
 readme = "README.md"
 authors = [
