@@ -2,6 +2,7 @@ import base64
 import inspect
 import json
 import os
+from asyncio import log
 from datetime import datetime, timedelta
 from json import JSONDecodeError
 from typing import Callable, Optional
@@ -17,6 +18,7 @@ from fastapi import (
     Response,
     status,
 )
+from starlette.requests import ClientDisconnect
 from starlette.responses import FileResponse
 
 from tuspyserver.metadata import FileMetadata
@@ -63,22 +65,29 @@ def create_tus_router(
         has_chunks = False
 
         with open(f"{files_dir}/{uuid}", "ab") as f:
-            async for chunk in request.stream():
-                has_chunks = True
-                # Skip empty chunks but continue processing
-                if len(chunk) == 0:
-                    continue
+            try:
+                async for chunk in request.stream():
+                    has_chunks = True
+                    # Skip empty chunks but continue processing
+                    if len(chunk) == 0:
+                        continue
 
-                if _get_file_length(uuid) + len(chunk) > max_size:
-                    raise HTTPException(status_code=413)
+                    if _get_file_length(uuid) + len(chunk) > max_size:
+                        raise HTTPException(status_code=413)
 
-                f.write(chunk)
-                meta.offset += len(chunk)
-                meta.upload_chunk_size = len(chunk)
-                meta.upload_part += 1
+                    f.write(chunk)
+                    meta.offset += len(chunk)
+                    meta.upload_chunk_size = len(chunk)
+                    meta.upload_part += 1
+                    _write_metadata(meta)
+            except ClientDisconnect:
+                return False
+            except Exception as e:
+                meta.error = str(e)
                 _write_metadata(meta)
-
-            f.close()
+                return False
+            finally:
+                f.close()
 
         # For empty files in a POST request, we still want to return True
         # to ensure _get_and_save_the_file gets called
