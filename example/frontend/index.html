@@ -23,11 +23,11 @@
         target: '#drag-drop-area'
       })
       .use(Tus, {
-        endpoint: 'http://127.0.0.1:8000/files/'
+        endpoint: 'http://localhost:8000/files/'
       })
 
     uppy.on('complete', (result) => {
-      console.log('Upload complete! Files uploaded:', result.successful)
+      console.log(result)
     })
   </script>
 </body>

@@ -2,7 +2,6 @@ from tuspyserver import create_tus_router
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 
 import uvicorn
 
@@ -27,9 +26,6 @@ app.add_middleware(
     ],
 )
 
-# serve an html frontend from the static folder
-app.mount("/static", StaticFiles(directory="static"), name="static")
-
 
 # use completion hook to log uploads
 def on_upload_complete(file_path: str, metadata: dict):
@@ -51,7 +47,7 @@ app.include_router(
 # run the app with uvicorn
 if __name__ == "__main__":
     uvicorn.run(
-        "basic:app",
+        "server:app",
         reload=True,
         use_colors=True,
     )
