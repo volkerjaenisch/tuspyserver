@@ -48,6 +48,7 @@ app.include_router(
 if __name__ == "__main__":
     uvicorn.run(
         "server:app",
+        host="0.0.0.0",
         reload=True,
         use_colors=True,
     )

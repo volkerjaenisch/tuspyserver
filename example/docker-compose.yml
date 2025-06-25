@@ -1,0 +1,18 @@
+services:
+  backend:
+    build:
+      context: ..
+      dockerfile: example/backend/Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/uploads:/app/example/backend/uploads
+
+  frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    ports:
+      - "4173:4173"
+    depends_on:
+      - backend
