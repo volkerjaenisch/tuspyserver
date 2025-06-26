@@ -6,7 +6,7 @@ WORKDIR /app
 COPY . .
 
 # inject env var - use localhost:8000 since the browser needs to access it
-RUN echo "VITE_BACKEND_URL=http://localhost:8000" >> .env.production
+RUN echo "VITE_BACKEND_URL=http://localhost" >> .env.production
 
 # Build the app
 RUN npm run build
