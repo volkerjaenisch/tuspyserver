@@ -121,10 +121,11 @@ def core_routes(router, options):
 
         if file.info and file.info.size == file.info.offset:
             file_path = os.path.join(options.files_dir, uuid)
-            result = on_complete(file_path, file.info.metadata)
-            # if the callback returned a coroutine, await it
-            if inspect.isawaitable(result):
-                await result
+            if options.on_upload_complete is None:
+                result = on_complete(file_path, file.info.metadata)
+                # if the callback returned a coroutine, await it
+                if inspect.isawaitable(result):
+                    await result
 
         return response
 
