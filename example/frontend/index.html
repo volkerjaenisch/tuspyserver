@@ -25,7 +25,8 @@
         target: '#drag-drop-area'
       })
       .use(Tus, {
-        endpoint: `${url}/files/`
+        endpoint: `${url}/files/`,
+        chunkSize: 100_000_000, // 100MB
       })
 
     uppy.on('complete', (result) => {
