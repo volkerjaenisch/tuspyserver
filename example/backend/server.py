@@ -38,7 +38,6 @@ def on_upload_complete(file_path: str, metadata: dict):
 app.include_router(
     create_tus_router(
         files_dir="./uploads",
-        max_size=128849018880,
         on_upload_complete=on_upload_complete,
         prefix="files",
     )
