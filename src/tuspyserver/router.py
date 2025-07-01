@@ -41,7 +41,7 @@ def create_tus_router(
     upload_complete_dep = upload_complete_dep or _fallback_on_complete_dep
 
     options = TusRouterOptions(
-        prefix=prefix[1:0] if prefix and prefix[0] == "/" else prefix,
+        prefix=prefix[1:] if prefix and prefix[0] == "/" else prefix,
         files_dir=files_dir,
         max_size=max_size,
         auth=auth,
@@ -62,8 +62,9 @@ def create_tus_router(
         ),
     )
 
+    clean_prefix = prefix.lstrip("/").rstrip("/")
     router = APIRouter(
-        prefix=f"/{options.prefix}",
+        prefix=clean_prefix,
         redirect_slashes=True,
         tags=options.tags or ["Tus"],
     )
