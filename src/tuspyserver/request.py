@@ -91,7 +91,7 @@ def make_request_chunks_dep(options: TusRouterOptions):
     return request_chunks_dep
 
 
-def get_request_headers(request: Request, uuid: str) -> dict:
+def get_request_headers(request: Request, uuid: str, prefix: str = "files") -> dict:
     proto = "http"
     host = request.headers.get("host")
     if request.headers.get("X-Forwarded-Proto") is not None:
@@ -99,12 +99,11 @@ def get_request_headers(request: Request, uuid: str) -> dict:
     if request.headers.get("X-Forwarded-Host") is not None:
         host = request.headers.get("X-Forwarded-Host")
 
-    # Get the prefix from the request path
-    path_parts = request.url.path.split("/")
-    prefix = path_parts[1] if len(path_parts) > 1 else "files"
+    # Use the provided prefix parameter
+    clean_prefix = prefix.lstrip("/").rstrip("/")
 
     return {
-        "location": f"{proto}://{host}/{prefix}/{uuid}",
+        "location": f"{proto}://{host}/{clean_prefix}/{uuid}",
         "proto": proto,
         "host": host,
     }

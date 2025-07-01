@@ -60,7 +60,7 @@ def creation_extension_routes(router, options):
         file = TusUploadFile(options=options, params=params)
         # update request headers
         response.headers["Location"] = get_request_headers(
-            request=request, uuid=file.uid
+            request=request, uuid=file.uid, prefix=options.prefix
         )["location"]
         response.headers["Tus-Resumable"] = options.tus_version
         response.headers["Content-Length"] = str(0)
