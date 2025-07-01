@@ -64,7 +64,7 @@ def create_tus_router(
 
     clean_prefix = prefix.lstrip("/").rstrip("/")
     router = APIRouter(
-        prefix=clean_prefix,
+        prefix=f"/{clean_prefix}" if clean_prefix else "",
         redirect_slashes=True,
         tags=options.tags or ["Tus"],
     )
