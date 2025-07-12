@@ -4,14 +4,7 @@ import os
 from datetime import datetime, timedelta
 from typing import Callable
 
-from fastapi import (
-    Depends,
-    Header,
-    HTTPException,
-    Request,
-    Response,
-    status,
-)
+from fastapi import Depends, Header, HTTPException, Request, Response, status
 
 from tuspyserver.file import TusUploadFile, TusUploadParams
 from tuspyserver.request import get_request_headers
@@ -67,7 +60,7 @@ def creation_extension_routes(router, options):
         # set status code
         response.status_code = status.HTTP_201_CREATED
         # run completion hooks
-        if file.info and file.info.size == 0:
+        if file.info is not None and file.info.size == 0:
             file_path = os.path.join(options.files_dir, file.uid)
             result = on_complete(file_path, file.info.metadata)
             # if the callback returned a coroutine, await it

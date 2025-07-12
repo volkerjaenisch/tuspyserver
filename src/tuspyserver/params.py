@@ -1,4 +1,5 @@
 from typing import Hashable
+
 from pydantic import BaseModel
 
 
@@ -11,3 +12,4 @@ class TusUploadParams(BaseModel):
     defer_length: bool = False
     upload_chunk_size: int = 0
     expires: float | str | None
+    error: str | None = None

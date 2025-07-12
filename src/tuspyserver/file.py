@@ -1,16 +1,16 @@
 from __future__ import annotations
+
 import typing
 
 if typing.TYPE_CHECKING:
     from tuspyserver.router import TusRouterOptions
 
-import os
 import datetime
-
+import os
 from uuid import uuid4
 
-from tuspyserver.params import TusUploadParams
 from tuspyserver.info import TusUploadInfo
+from tuspyserver.params import TusUploadParams
 
 
 class TusUploadFile:
@@ -48,7 +48,7 @@ class TusUploadFile:
         return self._options
 
     @property
-    def info(self) -> TusUploadParams:
+    def info(self) -> TusUploadParams | None:
         return self._info.params
 
     @info.setter
@@ -72,8 +72,10 @@ class TusUploadFile:
         if os.path.exists(self.path):
             os.remove(self.path)
 
-        if os.path.exists(self.info.path):
-            os.remove(self.info.path)
+        # Only try to delete info file if info exists
+        if self.info is not None and hasattr(self._info, "path"):
+            if os.path.exists(self._info.path):
+                os.remove(self._info.path)
 
     def __len__(self) -> int:
         if self.exists:
@@ -86,11 +88,12 @@ def list_files(options: TusRouterOptions) -> list[str]:
 
 
 def gc_files(options: TusRouterOptions):
-    for uid in list_files():
+    for uid in list_files(options):
         file = TusUploadFile(uid=uid, options=options)
         if (
-            file.info
+            file.info is not None
             and file.info.expires
+            and isinstance(file.info.expires, str)
             and datetime.datetime.fromisoformat(file.info.expires)
             < datetime.datetime.now()
         ):

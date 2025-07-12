@@ -4,14 +4,7 @@ import os
 from datetime import datetime, timedelta
 from typing import Callable
 
-
-from fastapi import (
-    Depends,
-    Header,
-    HTTPException,
-    Response,
-    status,
-)
+from fastapi import Depends, Header, HTTPException, Response, status
 
 from tuspyserver.file import TusUploadFile
 from tuspyserver.request import make_request_chunks_dep
@@ -29,13 +22,13 @@ def core_routes(router, options):
         response: Response, uuid: str, _=Depends(options.auth)
     ) -> Response:
         # validate file
-
         file = TusUploadFile(uid=uuid, options=options)
-        if file.info is None or not file.exists:
+
+        # Check if file exists and has valid info
+        if not file.exists or file.info is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
         # encode metadata
-
         filename = file.info.metadata.get("filename") or file.info.metadata.get("name")
         if filename is None:
             raise HTTPException(
@@ -54,7 +47,6 @@ def core_routes(router, options):
             return base64.b64encode(s.encode("utf-8")).decode("ascii")
 
         # construct response
-
         response.headers["Tus-Resumable"] = file.options.tus_version
         response.headers["Upload-Metadata"] = (
             f"filename {b64(filename)}, filetype {b64(filetype)}"
@@ -80,8 +72,8 @@ def core_routes(router, options):
     ) -> Response:
         file = TusUploadFile(uid=uuid, options=options)
 
-        # check if the upload ID is valid
-        if not file.info or uuid != file.uid:
+        # check if the upload ID is valid and file exists with valid info
+        if not file.exists or file.info is None or uuid != file.uid:
             raise HTTPException(status_code=404)
 
         # check if the Upload Offset with Content-Length header is correct
