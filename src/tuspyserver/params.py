@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 class TusUploadParams(BaseModel):
     metadata: dict[Hashable, str]
-    size: int | None
+    size: Optional[int]
     offset: int = 0
     upload_part: int = 0
     created_at: str
